@@ -1,0 +1,98 @@
+" URLとタイトルをコピー
+nnoremap Ya :js util.copyToClipboard(buffer.title+String.fromCharCode(10)+buffer.URL)
+nnoremap Yt :js util.copyToClipboard(buffer.title)
+" コマンドモードでIMEを半角にする。*Windowsのみ有効
+style -name commandline-ime chrome://* #liberator-commandline-command input {ime-mode: inactive;}
+" コマンドラインで自動的にオフ(他にinsertおよびcmd,insertを指定可能)
+let g:imeoff='cmd'
+"カラースキーマ
+colorscheme sweets_edit
+" テキストボックス、テキストエリアでのエディターをvimにする
+set editor='vim -f'
+"テキストボックスなど入力欄にフォーカスを奪われるのを防ぐ
+"set focuscontent
+"help や adoon 等の表示を別のタブに表示させる
+set newtab=all
+"日本語のサイトも、次のページや前のページにジャンプできるようにする
+set nextpattern=\bnext\b,\bmore\b,next,^次(の)?ページ,\b次.*,→\b,^>$,^(>>|≫)$,^(>|≫),(>|≫)$,^次(へ|の|ペ),^続き,\bnext\b,^>$,^(>>|»)$,^(>|»),(>|»)$,\bmore\b
+set previouspattern=\bprev|previous\b,prev,^前(の)?ページ,\b前.*,\b←,^<$,^(<<|≪)$,^(<|≪),(<|≪)$,^前(へ|の|ペ),^戻る,\bprev|previous\b,^<$,^(<<|«)$,^(<|«),(<|«)$
+"ヒントモードでアルファベットを仕様 ※set hintchars& "hintchars'を元の数字のみに戻す
+set hintchars="abcdefghijklmnopqrstuvwxyz"
+" 検索で大文字小文字の区別をしない
+set ignorecase
+"検索時にページの最後まで行ったら最初に戻らない
+set nowrapscan
+"デフォルト検索エンジン(検索バーの管理→キーワードでgoogleをgに変更しておく)
+set defsearch=g
+"サジェストエンジンの設定
+set suggestengines=g
+" 補完リストはサーチエンジンとロケーションバーの履歴の順番
+set complete=sl
+" 補完リスト10項目まで
+set maxitems=10
+" 補完リストの高さを調節したり表示・非表示をトグル
+javascript <<EOM
+mappings.addUserMap(
+  [modes.COMMAND_LINE],
+  ['<C-g>'],
+  'Adjust height of completion list',
+  function() {
+    let list = commandline._completions.itemList;
+    list._minHeight = 0;
+    list._autoSize();
+  });
+EOM
+" <C-t> で補完リストの表示・非表示をトグルする
+javascript <<EOM
+mappings.addUserMap(
+  [modes.COMMAND_LINE],
+  ['<C-t>'],
+  'Toggle visibility of completion list',
+  function() {
+    let list = commandline._completions.itemList;
+    if (list.visible()) {
+      list.hide();
+    } else {
+      list.show();
+    }
+  });
+EOM
+" クリックマーク go, gnでアクセス
+qmark a https://anime.dmkt-sp.jp/animestore/tp_pc
+qmark c https://console.aws.amazon.com/
+qmark d http://www.dmm.com/
+qmark f https://feedly.com/
+qmark g https://www.google.co.jp/
+qmark h http://www.hmv.co.jp/
+qmark k http://kakaku.com/
+qmark l http://www.library.toshima.tokyo.jp/
+qmark m https://mixi.jp/
+qmark n http://www.nicovideo.jp/
+qmark o http://auctions.yahoo.co.jp/
+qmark s https://app.simplenote.com/
+qmark t https://tweetdeck.twitter.com/
+qmark v http://www.youtube.com/
+qmark w http://ja.wikipedia.org/wiki/メインページ
+qmark y http://ascii.jp/asciiclub/
+qmark o http://auctions.yahoo.co.jp/
+" ズームイン・アウト
+noremap zi 3zi
+noremap zo 3zo
+noremap zI 3zI
+noremap zO 3zO
+"BackSpaceを無効化
+nnoremap <BS> <NOP>
+"Ctrl+Jを無効化
+nnoremap <C-j> <NOP>
+"insertモードでCtrl+dを無効
+inoremap <C-d> <NOP>
+inoremap <C-j> <NOP>
+
+ignorekeys add tweetdeck\\.twitter
+ignorekeys add feedly\\.com
+nnoremap ecc :emenu ツール.Default User Agent.Browsers - Windows.Chrome 45.0 (Windows 10 - 64 bit)<CR>
+nnoremap ecd :emenu ツール.Chrome 45.0 (Windows 10 - 64 bit).Default User Agent<CR>
+nnoremap ep :emenu ブックマーク.Pocket のリストを表示<CR>
+nnoremap ef :emenu ツール.Web 開発.FireFTP<CR>
+nnoremap es :emenu ファイル.名前を付けてページを保存...<CR>
+
