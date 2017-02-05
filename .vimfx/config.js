@@ -54,7 +54,10 @@ const MAPPINGS = {
   'custom.mode.normal.open_feedly': 'gof',
   'custom.mode.normal.open_pocket': 'gop',
   'custom.mode.normal.open_simplenote': 'gos',
-  'custom.mode.normal.start_tweetdeck': 'got'
+  'custom.mode.normal.start_tweetdeck': 'got',
+  'custom.mode.normal.zoom_in': 'zi',
+  'custom.mode.normal.zoom_out': 'zo',
+  'custom.mode.normal.zoom_reset': 'zz'
 };
 
 const {commands} = vimfx.modes.normal;
@@ -174,8 +177,31 @@ const CUSTOM_COMMANDS = [
 			let location = new vim.window.URL(vim.browser.currentURI.spec)
 			vim.window.gBrowser.loadURI(`https://getpocket.com/a/`)
 		}
+	],
+	[
+		{
+			name: 'zoom_reset',
+			description: 'ズームリセット',
+		}, ({vim}) => {
+			vim.window.FullZoom.reset();
+		}
+	],
+	[
+		{
+			name: 'zoom_out',
+			description: 'ズームアウト',
+		}, ({vim}) => {
+			vim.window.FullZoom.reduce();
+		}
+	],
+	[
+		{
+			name: 'zoom_in',
+			description: 'c_ズームイン',
+		}, ({vim}) => {
+			vim.window.FullZoom.enlarge();
+		}
 	]
-	
 ];
 
 Object.entries(VIMFX_PREFS).forEach(([name, value]) => {
