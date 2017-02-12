@@ -43,14 +43,16 @@ if has('win32') || has('win64')
 endif
 " 行番号の設定
 set number
+" タブで半角スペースを挿入する
+set expandtab
 " タブの数設定
-set showtabline=2
+set showtabline=4
 "画面上でタブ文字が占める幅
-set tabstop=2
+set tabstop=4
 "自動インデントでずれる幅
-set shiftwidth=2
+set shiftwidth=4
 "連続した空白に対してタブキーやバックスペースキーでカーソルが動く幅
-set softtabstop=2
+set softtabstop=4
 "改行時に前の行のインデントを継続する
 set autoindent
 "改行時に入力された行の末尾に合わせて次の行のインデントを増減する

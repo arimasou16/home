@@ -44,37 +44,44 @@ const MAPPINGS = {
   'mode.hints.exit': '<escape> <c-[>',
   'mode.find.exit': '<escape>    <enter>  <c-[>',
   'mode.marks.exit': '<escape>  <c-[>',
-  'custom.mode.normal.click_toolbar_pocket': 'ep',
+  'custom.mode.normal.click_toolbar_pocket': 'cp',
+  'custom.mode.normal.contextmenu_toolbar_back': 'cmb',
   'custom.mode.normal.copy_as_markdown': 'ym',
-  'custom.mode.normal.search_selected_text': 's',
+  'custom.mode.normal.copy_title_and_url': 'yc',
+//  'custom.mode.normal.search_selected_text': 's',
   'custom.mode.normal.view_source': 'gf',
-  'custom.mode.normal.copy_selection_or_url': 'yc',
   'custom.mode.normal.open_danime_store': 'goa',
+  'custom.mode.normal.open_browser': 'gob',
   'custom.mode.normal.open_aws_console': 'goc',
   'custom.mode.normal.open_feedly': 'gof',
   'custom.mode.normal.open_pocket': 'gop',
   'custom.mode.normal.open_simplenote': 'gos',
   'custom.mode.normal.start_tweetdeck': 'got',
+  'custom.mode.normal.open_addons': 'addon',
   'custom.mode.normal.zoom_in': 'zi',
   'custom.mode.normal.zoom_out': 'zo',
-  'custom.mode.normal.zoom_reset': 'zz'
+  'custom.mode.normal.zoom_reset': 'zz',
+  'custom.mode.normal.search_selected_text': 'sst',
+  'custom.mode.normal.tab_move_to_index': 'mi',
+  'custom.mode.normal.goto_tab': 'b',
+  'custom.mode.normal.duplicate_tab': 'ctd'
 };
 
 const {commands} = vimfx.modes.normal;
 
 const CUSTOM_COMMANDS = [
-  [
-    {
-      name: 'search_selected_text',
-      description: 'Search for the selected text'
-    }, ({vim}) => {
-      vimfx.send(vim, 'getSelection', true, selection => {
-        if (selection != '') {
-          vim.window.switchToTabHavingURI(`https://www.google.co.jp/search?q=${selection}`, true);
-        }
-      });
-    }
-  ],
+  //[
+  //  {
+  //    name: 'search_selected_text',
+  //    description: 'Search for the selected text'
+  //  }, ({vim}) => {
+  //    vimfx.send(vim, 'getSelection', true, selection => {
+  //      if (selection != '') {
+  //        vim.window.switchToTabHavingURI('https://www.google.co.jp/search?q=${selection}', true);
+  //      }
+  //    });
+  //  }
+  //],
   [
     {
       name: 'copy_as_markdown',
@@ -91,18 +98,16 @@ const CUSTOM_COMMANDS = [
   ],
   [
     {
-      name: 'copy_selection_or_url',
-      description: 'Copy the selection or current url',
+      name: 'copy_title_and_url',
+      description: 'Copy title and url',
       category: 'location',
       order: commands.copy_current_url.order + 1
     }, ({vim}) => {
-      vimfx.send(vim, 'getSelection', true, selection => {
-      if (selection == '') {
-        selection = vim.window.gBrowser.selectedBrowser.currentURI.spec;
-      }
-      gClipboardHelper.copyString(selection);
-      vim.notify(`Copied to clipboard: ${selection}`);
-      });
+      let url = vim.window.gBrowser.selectedBrowser.currentURI.spec;
+      let title = vim.window.gBrowser.selectedBrowser.contentTitle;
+      let s = `${title}\n${url}`;
+      gClipboardHelper.copyString(s);
+      vim.notify(`Copied to clipboard: ${s}`);
     }
   ],
   [
@@ -113,95 +118,181 @@ const CUSTOM_COMMANDS = [
       vim.window.document.getElementById('pocket-button').click();
     }
   ],
-	[
-		{
-			name: 'view_source',
-			description: 'ページのソースを表示',
-		}, ({vim}) => {
+  [
+    {
+      name: 'contextmenu_toolbar_back',
+      description: 'Contextmenu toolbar button [Back]'
+    }, ({vim}) => {
+      vim.window.document.getElementById('back-button').contextmenu();
+    }
+  ],
+  [
+    {
+      name: 'view_source',
+      description: 'ページのソースを表示',
+    }, ({vim}) => {
       let url = vim.window.gBrowser.selectedBrowser.currentURI.spec;
-      let s = `view-source:${url}`;
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`${s}`)
-		}
-	],
-	[
-		{
-			name: 'open_danime_store',
-			description: 'Dアニメストアを開く',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://anime.dmkt-sp.jp/animestore/tp_pc`)
-		}
-	],
-	[
-		{
-			name: 'open_aws_console',
-			description: 'AWSコンソールを開く',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://console.aws.amazon.com/`)
-		}
-	],
-	[
-		{
-			name: 'start_tweetdeck',
-			description: 'tweetdeckを始める',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://tweetdeck.twitter.com/`)
-		}
-	],
-	[
-		{
-			name: 'open_simplenote',
-			description: 'simplenoteを開く',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://app.simplenote.com/`)
-		}
-	],
-	[
-		{
-			name: 'open_feedly',
-			description: 'Feedlyを開く',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://feedly.com/i/latest`)
-		}
-	],
-	[
-		{
-			name: 'open_pocket',
-			description: 'Pocketを開く',
-		}, ({vim}) => {
-			let location = new vim.window.URL(vim.browser.currentURI.spec)
-			vim.window.gBrowser.loadURI(`https://getpocket.com/a/`)
-		}
-	],
-	[
-		{
-			name: 'zoom_reset',
-			description: 'ズームリセット',
-		}, ({vim}) => {
-			vim.window.FullZoom.reset();
-		}
-	],
-	[
-		{
-			name: 'zoom_out',
-			description: 'ズームアウト',
-		}, ({vim}) => {
-			vim.window.FullZoom.reduce();
-		}
-	],
-	[
-		{
-			name: 'zoom_in',
-			description: 'c_ズームイン',
-		}, ({vim}) => {
-			vim.window.FullZoom.enlarge();
-		}
-	]
+      if ( url.includes('view-source:') ) {
+        url = url.replace(/^view-source:/, '');
+      } else {
+        url = `view-source:${url}`
+      }
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI(`${url}`)
+    }
+  ],
+  [
+    {
+      name: 'open_danime_store',
+      description: 'Dアニメストアを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://anime.dmkt-sp.jp/animestore/tp_pc')
+    }
+  ],
+  [
+    {
+      name: 'open_aws_console',
+      description: 'AWSコンソールを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://console.aws.amazon.com/')
+    }
+  ],
+  [
+    {
+      name: 'start_tweetdeck',
+      description: 'tweetdeckを始める',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://tweetdeck.twitter.com/')
+    }
+  ],
+  [
+    {
+      name: 'open_simplenote',
+      description: 'simplenoteを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://app.simplenote.com/')
+    }
+  ],
+  [
+    {
+      name: 'open_feedly',
+      description: 'Feedlyを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://feedly.com/i/latest')
+    }
+  ],
+  [
+    {
+      name: 'open_pocket',
+      description: 'Pocketを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('https://getpocket.com/a/')
+    }
+  ],
+  [
+    {
+      name: 'open_browser',
+      description: 'Chrome URI Browserを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('chrome://browser/content/browser.xul')
+    }
+
+  ],
+  [
+    {
+      name: 'open_addons',
+      description: 'アドオンを開く',
+    }, ({vim}) => {
+      let location = new vim.window.URL(vim.browser.currentURI.spec)
+      vim.window.gBrowser.loadURI('about:addons')
+    }
+
+  ],
+  [
+    {
+      name: 'zoom_reset',
+      description: 'ズームリセット',
+    }, ({vim}) => {
+      vim.window.FullZoom.reset();
+    }
+  ],
+  [
+    {
+      name: 'zoom_out',
+      description: 'ズームアウト',
+    }, ({vim}) => {
+      vim.window.FullZoom.reduce();
+    }
+  ],
+  [
+    {
+      name: 'zoom_in',
+      description: 'ズームイン',
+    }, ({vim}) => {
+      vim.window.FullZoom.enlarge();
+    }
+  ],
+  [
+    {
+      name: 'search_selected_text',
+      description: 'Search for the selected text',
+    }, ({vim}) => {
+      let {messageManager} = vim.window.gBrowser.selectedBrowser
+      vimfx.send(vim, 'getSelection', null, selection => {
+        let inTab = true // Change to 'false' if you'd like to search in current tab.
+        vim.window.BrowserSearch.loadSearch(selection, inTab)
+      })
+    }
+  ],
+  [
+    {
+      name: 'tab_move_to_inex',
+      description: 'Move tab to index',
+      category: 'tabs',
+      order: commands.tab_move_forward.order + 1,
+    }, ({vim, count}) => {
+      if (count === undefined) {
+        vim.notify('Provide a count')
+        return
+      }
+      let {window} = vim
+      window.setTimeout(() => {
+        let {selectedTab} = window.gBrowser
+        if (selectedTab.pinned) {
+          vim.notify('Run from a non-pinned tab')
+          return
+        }
+        let newPosition = window.gBrowser._numPinnedTabs + count - 1
+        window.gBrowser.moveTabTo(selectedTab, newPosition)
+      }, 0)
+    }
+  ],
+//  [
+//    {
+//      name: 'duplicate_tab',
+//      description: 'Duplicate tab',
+//      category: 'tabs',
+//    }, ({vim}) => {
+//      vim.window.document.getElementById('action-button--duplicatename-mozilla-link').click();
+//    }
+//  ],
+  [
+    {
+      name: 'goto_tab',
+      description: 'Goto tab',
+      category: 'tabs',
+    }, function(args) {
+      commands.focus_location_bar.run(args);
+      args.vim.window.gURLBar.value = '% ';
+    }
+  ]
 ];
 
 Object.entries(VIMFX_PREFS).forEach(([name, value]) => {
