@@ -185,6 +185,7 @@ NeoBundle 'vim-scripts/BufOnly.vim'
 NeoBundle 'vim-scripts/copypath.vim'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'fuenor/qfixgrep'
+NeoBundle 'arimasou16/functions.vim'
 call neobundle#end()
 " Required:
 filetype plugin indent on
@@ -224,3 +225,5 @@ syntax enable
 set background=dark
 colorscheme solarized
 set guifont=Ricty\ Discord\ 14
+" copypath.vim 無名レジストリにもコピーする(1)
+let g:copypath_copy_to_unnamed_register = 1

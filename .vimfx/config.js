@@ -32,7 +32,7 @@ const MAPPINGS = {
   'mode.normal.tab_select_next': 'gt',
   'mode.normal.tab_select_first_non_pinned': 'g^',
   'mode.normal.tab_select_last': 'g$',
-  'mode.normal.tab_close': 'd x',
+  'mode.normal.tab_close': 'x',
   'mode.normal.tab_restore': 'u',
   'mode.normal.tab_restore_list': ',uu',
   'mode.normal.follow_previous': '[[',
@@ -42,13 +42,11 @@ const MAPPINGS = {
   'mode.normal.esc': '<force><escape> <force><c-[>',
   'mode.caret.exit': '<escape> <c-[>',
   'mode.hints.exit': '<escape> <c-[>',
-  'mode.find.exit': '<escape>    <enter>  <c-[>',
+  'mode.find.exit': '<escape> <enter> <c-[>',
   'mode.marks.exit': '<escape>  <c-[>',
   'custom.mode.normal.click_toolbar_pocket': 'cp',
-  'custom.mode.normal.contextmenu_toolbar_back': 'cmb',
   'custom.mode.normal.copy_as_markdown': 'ym',
   'custom.mode.normal.copy_title_and_url': 'yc',
-//  'custom.mode.normal.search_selected_text': 's',
   'custom.mode.normal.view_source': 'gf',
   'custom.mode.normal.open_danime_store': 'goa',
   'custom.mode.normal.open_browser': 'gob',
@@ -60,28 +58,20 @@ const MAPPINGS = {
   'custom.mode.normal.open_addons': 'addon',
   'custom.mode.normal.zoom_in': 'zi',
   'custom.mode.normal.zoom_out': 'zo',
-  'custom.mode.normal.zoom_reset': 'zz',
+  'custom.mode.normal.zoom_reset': 'z0',
   'custom.mode.normal.search_selected_text': 'sst',
+  'custom.mode.normal.selected_google_translate': 'sgt',
+  'custom.mode.normal.selected_url_open': 'suo',
+  'custom.mode.caret.search_selected_text': 's',
+  'custom.mode.caret.selected_google_translate': 't',
+  'custom.mode.caret.selected_url_open': 'u',
   'custom.mode.normal.tab_move_to_index': 'mi',
   'custom.mode.normal.goto_tab': 'b',
-  'custom.mode.normal.duplicate_tab': 'ctd'
 };
 
 const {commands} = vimfx.modes.normal;
 
 const CUSTOM_COMMANDS = [
-  //[
-  //  {
-  //    name: 'search_selected_text',
-  //    description: 'Search for the selected text'
-  //  }, ({vim}) => {
-  //    vimfx.send(vim, 'getSelection', true, selection => {
-  //      if (selection != '') {
-  //        vim.window.switchToTabHavingURI('https://www.google.co.jp/search?q=${selection}', true);
-  //      }
-  //    });
-  //  }
-  //],
   [
     {
       name: 'copy_as_markdown',
@@ -116,14 +106,6 @@ const CUSTOM_COMMANDS = [
       description: 'Click toolbar button [Pocket]'
     }, ({vim}) => {
       vim.window.document.getElementById('pocket-button').click();
-    }
-  ],
-  [
-    {
-      name: 'contextmenu_toolbar_back',
-      description: 'Contextmenu toolbar button [Back]'
-    }, ({vim}) => {
-      vim.window.document.getElementById('back-button').contextmenu();
     }
   ],
   [
@@ -243,11 +225,77 @@ const CUSTOM_COMMANDS = [
     {
       name: 'search_selected_text',
       description: 'Search for the selected text',
+      mode: 'normal',
     }, ({vim}) => {
-      let {messageManager} = vim.window.gBrowser.selectedBrowser
+      //let {messageManager} = vim.window.gBrowser.selectedBrowser
       vimfx.send(vim, 'getSelection', null, selection => {
         let inTab = true // Change to 'false' if you'd like to search in current tab.
         vim.window.BrowserSearch.loadSearch(selection, inTab)
+      })
+    }
+  ],
+  [
+    {
+      name: 'selected_google_translate',
+      description: '選択文字列をGoogle翻訳',
+      mode: 'normal',
+    }, ({vim}) => {
+      vimfx.send(vim, 'getSelection', null, selection => {
+        vim.window.switchToTabHavingURI('http://translate.google.co.jp/?source=osdd#auto|auto|'+selection, true)
+      })
+    }
+  ],
+  [
+    {
+      name: 'selected_url_open',
+      description: '選択URLを開く',
+      mode: 'normal',
+    }, ({vim}) => {
+      vimfx.send(vim, 'getSelection', null, selection => {
+        let url = selection;
+        if ( !selection.includes('http') ) {
+          url = 'http://' + selection;
+        }
+        vim.window.switchToTabHavingURI(url, true)
+      })
+    }
+  ],
+  [
+    {
+      name: 'search_selected_text',
+      description: 'Search for the selected text',
+      mode: 'caret',
+    }, ({vim}) => {
+      //let {messageManager} = vim.window.gBrowser.selectedBrowser
+      vimfx.send(vim, 'getSelection', null, selection => {
+        let inTab = true // Change to 'false' if you'd like to search in current tab.
+        vim.window.BrowserSearch.loadSearch(selection, inTab)
+      })
+    }
+  ],
+  [
+    {
+      name: 'selected_google_translate',
+      description: '選択文字列をGoogle翻訳',
+      mode: 'caret',
+    }, ({vim}) => {
+      vimfx.send(vim, 'getSelection', null, selection => {
+        vim.window.switchToTabHavingURI('http://translate.google.co.jp/?source=osdd#auto|auto|'+selection, true)
+      })
+    }
+  ],
+  [
+    {
+      name: 'selected_url_open',
+      description: '選択URLを開く',
+      mode: 'caret',
+    }, ({vim}) => {
+      vimfx.send(vim, 'getSelection', null, selection => {
+        let url = selection;
+        if ( !selection.includes('http') ) {
+          url = 'http://' + selection;
+        }
+        vim.window.switchToTabHavingURI(url, true)
       })
     }
   ],
@@ -274,15 +322,6 @@ const CUSTOM_COMMANDS = [
       }, 0)
     }
   ],
-//  [
-//    {
-//      name: 'duplicate_tab',
-//      description: 'Duplicate tab',
-//      category: 'tabs',
-//    }, ({vim}) => {
-//      vim.window.document.getElementById('action-button--duplicatename-mozilla-link').click();
-//    }
-//  ],
   [
     {
       name: 'goto_tab',
